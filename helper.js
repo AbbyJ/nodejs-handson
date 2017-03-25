@@ -60,10 +60,3 @@ function convertJsonToHtml (todoListString) {
 	return res;
 }
 
-function createPElementWithText (text) {
-	var p = document.createElement('p');
-	var t = document.createTextNode(text);
-	p.appendChild(t);
-	return p;
-}
-

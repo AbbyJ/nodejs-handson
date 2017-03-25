@@ -1,15 +1,84 @@
 <DOCTYPE html>
+<html>
 <head>
-	<title> NodeJS Hands-on Working Session </title>
+	<title> Gessa NodeJS Demo </title>
+	<script src="socket.io.js"></script>
 </head>
 
 <body>
-	
+	<div align="center">
+		<h1> Public ToDo List  </h1>
+		<p id="list-contents"></p>
+		<div>
+			<input type="text" id="new-todo-string" placeholder="Todo Item">
+			<button id="add-new-todo" onclick="addNewTodoHandler()"> Add </button>
+		</div>
+		<div>
+			<input type="text" id="delete-todo-input" placeholder="Enter Id">
+			<button id="delete-todo-button" onclick="deleteTodoHandler()"> Delete </button>
+		</div>
+	</div>
+	<hr />
+	<div align="center">
+		<h1> Public Chat room </h1>
+
+		<div id="messages"> </div>
+		<textarea id="new-message-input"></textarea>
+		<button id="send-message-button" onclick="sendMessageHandler()"> Send! </button>
+
+	</div>
 </body>
+
 <script src="helper.js"></script>
 <script type="text/javascript">
-	document.addEventListener("DOMContentLoaded", function (event) {
-		// DOM Ready
+	
+	document.addEventListener("DOMContentLoaded", function(event) {
+    	getTodoList( function(todoList) {
+			var p = document.getElementById("list-contents");
+			console.log("got the list");
+			p.innerHTML = convertJsonToHtml(todoList);
+		});
+  	});
+
+  	function addNewTodoHandler() {
+		var inputElement = document.getElementById("new-todo-string");
+		var newTodo = inputElement.value;
+		addToList(newTodo, function (todoList) {
+			console.log("got the new list");
+			var p = document.getElementById("list-contents");
+			p.innerHTML = convertJsonToHtml(todoList);
+			inputElement.value = '';
+		});
+	};
+
+	function deleteTodoHandler() {
+		var inputElement = document.getElementById("delete-todo-input");
+		var todoId = inputElement.value;
+    		deleteTodo(todoId, function (todoList) {
+    			console.log("got the new list");
+				var p = document.getElementById("list-contents");
+    			p.innerHTML = convertJsonToHtml(todoList);
+    			inputElement.value = '';
+    		});
+	};
+
+	var socket = io();
+
+	function sendMessageHandler() {
+		var newMessageElement = document.getElementById("new-message-input");
+    	var newMessage = newMessageElement.value;
+    	socket.emit('chat_message', newMessage);
+    	newMessageElement.value = '';
+	};
+
+	socket.on('chat_message', function (msg) {
+		var messages = document.getElementById("messages");
+		var p = document.createElement('p');
+		var t = document.createTextNode(msg);
+		p.appendChild(t);
+		messages.appendChild(p);
 	});
+</script>
 
 </script>
+</html>
